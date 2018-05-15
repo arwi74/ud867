@@ -1,7 +1,10 @@
 package com.udacity.gradle.builditbigger;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,9 +13,10 @@ import android.widget.Toast;
 
 import com.example.javajokes.Joker;
 import com.example.jokedisplay.jokeActivity;
+import com.udacity.gradle.builditbigger.backend.myApi.MyApi;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements EndpointAsyncTask.EndpointListener{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,12 +48,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void tellJoke(View view) {
-        Joker joker = new Joker();
-        //Toast.makeText(this, joker.getJoke(), Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(this, jokeActivity.class);
-        intent.putExtra(jokeActivity.EXTRA_JOKE, joker.getJoke());
-        startActivity(intent);
+        Pair pair = Pair.create(this,"");
+        new EndpointAsyncTask()
+                .execute(pair);
+
     }
 
 
+    @Override
+    public void onReceiveEndpointResult(String result) {
+        Intent intent = new Intent(this, jokeActivity.class);
+        intent.putExtra(jokeActivity.EXTRA_JOKE, result);
+        startActivity(intent);
+    }
 }
