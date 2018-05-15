@@ -1,8 +1,6 @@
 package com.udacity.gradle.builditbigger;
 
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.VisibleForTesting;
 import android.support.test.espresso.IdlingResource;
@@ -11,22 +9,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
-
-import com.example.javajokes.Joker;
+import android.widget.ProgressBar;
 import com.example.jokedisplay.jokeActivity;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
-import com.udacity.gradle.builditbigger.EndpointAsyncTask;
-import com.udacity.gradle.builditbigger.R;
-import com.udacity.gradle.builditbigger.backend.myApi.MyApi;
 import com.udacity.gradle.builditbigger.test.SimpleIdlingResource;
 
 
 public class MainActivity extends AppCompatActivity implements EndpointAsyncTask.EndpointListener {
     private IdlingResource mIdlingResource;
     private InterstitialAd mInterstitialAd;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,9 +36,16 @@ public class MainActivity extends AppCompatActivity implements EndpointAsyncTask
                 jokeRequest();
             }
         });
+        mProgressBar = findViewById(R.id.progress_bar);
     }
 
+    private void progressBarShow() {
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
 
+    private void progressBarHide() {
+        mProgressBar.setVisibility(View.GONE);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -69,6 +70,7 @@ public class MainActivity extends AppCompatActivity implements EndpointAsyncTask
     }
 
     public void onJokeRequestClick(View view) {
+        progressBarShow();
         if (mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
         } else {
@@ -85,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements EndpointAsyncTask
 
     @Override
     public void onReceiveEndpointResult(String result) {
+        progressBarHide();
         ((SimpleIdlingResource)getIdlingResource()).setIdleState(true);
         Intent intent = new Intent(this, jokeActivity.class);
         intent.putExtra(jokeActivity.EXTRA_JOKE, result);

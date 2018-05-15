@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 
 import com.example.jokedisplay.jokeActivity;
 import com.udacity.gradle.builditbigger.test.SimpleIdlingResource;
@@ -16,13 +17,22 @@ import com.udacity.gradle.builditbigger.test.SimpleIdlingResource;
 
 public class MainActivity extends AppCompatActivity implements EndpointAsyncTask.EndpointListener{
     private IdlingResource mIdlingResource;
+    private ProgressBar mProgressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mProgressBar = findViewById(R.id.progress_bar);
     }
 
+    private void progressBarShow() {
+        mProgressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void progressBarHide() {
+        mProgressBar.setVisibility(View.GONE);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -47,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements EndpointAsyncTask
     }
 
     public void onJokeRequestClick(View view) {
+        progressBarShow();
         Pair pair = Pair.create(this,"");
         ((SimpleIdlingResource)getIdlingResource()).setIdleState(false);
         new EndpointAsyncTask()
@@ -55,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements EndpointAsyncTask
 
     @Override
     public void onReceiveEndpointResult(String result) {
+        progressBarHide();
         ((SimpleIdlingResource)getIdlingResource()).setIdleState(true);
         Intent intent = new Intent(this, jokeActivity.class);
         intent.putExtra(jokeActivity.EXTRA_JOKE, result);
