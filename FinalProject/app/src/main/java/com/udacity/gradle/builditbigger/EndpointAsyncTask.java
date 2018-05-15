@@ -45,7 +45,8 @@ class EndpointAsyncTask extends AsyncTask<Pair<EndpointAsyncTask.EndpointListene
         try {
             return myApiService.getJoke().execute().getJokeString();
         } catch(IOException e) {
-            return e.getMessage();
+           // return e.getMessage();
+            return "";
         }
     }
 

@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.VisibleForTesting;
+import android.support.test.espresso.IdlingResource;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
@@ -14,9 +16,11 @@ import android.widget.Toast;
 import com.example.javajokes.Joker;
 import com.example.jokedisplay.jokeActivity;
 import com.udacity.gradle.builditbigger.backend.myApi.MyApi;
+import com.udacity.gradle.builditbigger.test.SimpleIdlingResource;
 
 
 public class MainActivity extends AppCompatActivity implements EndpointAsyncTask.EndpointListener{
+    private IdlingResource mIdlingResource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements EndpointAsyncTask
 
     public void tellJoke(View view) {
         Pair pair = Pair.create(this,"");
+        ((SimpleIdlingResource)getIdlingResource()).setIdleState(false);
         new EndpointAsyncTask()
                 .execute(pair);
 
@@ -57,8 +62,16 @@ public class MainActivity extends AppCompatActivity implements EndpointAsyncTask
 
     @Override
     public void onReceiveEndpointResult(String result) {
+        ((SimpleIdlingResource)getIdlingResource()).setIdleState(true);
         Intent intent = new Intent(this, jokeActivity.class);
         intent.putExtra(jokeActivity.EXTRA_JOKE, result);
         startActivity(intent);
+    }
+
+    @VisibleForTesting
+    public IdlingResource getIdlingResource() {
+        if (mIdlingResource == null)
+            mIdlingResource = new SimpleIdlingResource();
+        return mIdlingResource;
     }
 }
