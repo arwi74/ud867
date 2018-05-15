@@ -16,7 +16,7 @@ import java.io.IOException;
  * Created by Arkadiusz Wilczek on 15.05.18.
  */
 
-class EndpointAsyncTask extends AsyncTask<Pair<EndpointAsyncTask.EndpointListener, String>, Void, String> {
+public class EndpointAsyncTask extends AsyncTask<Pair<EndpointAsyncTask.EndpointListener, String>, Void, String> {
     private static MyApi myApiService = null;
     private Context context;
     private EndpointListener mListener;

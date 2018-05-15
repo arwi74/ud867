@@ -15,18 +15,35 @@ import android.widget.Toast;
 
 import com.example.javajokes.Joker;
 import com.example.jokedisplay.jokeActivity;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.udacity.gradle.builditbigger.EndpointAsyncTask;
+import com.udacity.gradle.builditbigger.R;
 import com.udacity.gradle.builditbigger.backend.myApi.MyApi;
 import com.udacity.gradle.builditbigger.test.SimpleIdlingResource;
 
 
-public class MainActivity extends AppCompatActivity implements EndpointAsyncTask.EndpointListener{
+public class MainActivity extends AppCompatActivity implements EndpointAsyncTask.EndpointListener {
     private IdlingResource mIdlingResource;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        mInterstitialAd = new InterstitialAd(this);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mInterstitialAd.setAdListener(new AdListener(){
+            @Override
+            public void onAdClosed() {
+                super.onAdClosed();
+                jokeRequest();
+            }
+        });
     }
+
 
 
     @Override
@@ -51,14 +68,20 @@ public class MainActivity extends AppCompatActivity implements EndpointAsyncTask
         return super.onOptionsItemSelected(item);
     }
 
-    public void tellJoke(View view) {
+    public void onJokeRequestClick(View view) {
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            jokeRequest();
+        }
+    }
+
+    private void jokeRequest() {
         Pair pair = Pair.create(this,"");
         ((SimpleIdlingResource)getIdlingResource()).setIdleState(false);
         new EndpointAsyncTask()
                 .execute(pair);
-
     }
-
 
     @Override
     public void onReceiveEndpointResult(String result) {
