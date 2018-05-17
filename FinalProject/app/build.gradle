@@ -12,7 +12,7 @@ buildscript {
 
 android {
     compileSdkVersion 26
-    buildToolsVersion "26.0.3"
+    buildToolsVersion "27.0.3"
     defaultConfig {
         applicationId "com.udacity.gradle.builditbigger"
         minSdkVersion 16
@@ -42,10 +42,33 @@ android {
     }
 }
 
+
+task testAll {
+    group = "udacity"
+    description = "start GC server , run connected tests and stop server"
+   dependsOn "startGCloudServer","connectedTest"
+   finalizedBy ":backend:appengineStop"
+}
+
+task startGCloudServer {
+    group = "udacity"
+    description = "start GC server"
+    dependsOn ":backend:appengineStart"
+}
+
+task connectedTest {
+    group = "udacity"
+    description = "run all connected tests"
+    dependsOn ":app:connectedAndroidTest"
+}
+
+connectedTest.mustRunAfter startGCloudServer
+
+
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     endpointsServer project(path: ':backend', configuration: 'endpoints')
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation "com.android.support:appcompat-v7:${supportLibVersion}"
     freeImplementation 'com.google.android.gms:play-services-ads:15.0.1'
     implementation 'com.google.api-client:google-api-client:1.23.0'
     implementation 'com.google.http-client:google-http-client-android:1.23.0'
